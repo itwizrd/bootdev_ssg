@@ -22,6 +22,16 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         new_nodes.extend(split_nodes)
     return new_nodes
 
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        new_nodes.append(extract_markdown_images(old_node))
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    pass
+
 def extract_markdown_images(text):
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)

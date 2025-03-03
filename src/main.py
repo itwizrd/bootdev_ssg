@@ -1,4 +1,3 @@
-from textnode import TextType, TextNode
 from file_handling import recursive_copy,clear_directory
 
 

@@ -36,7 +36,7 @@ def recursive_copy(static_dir, public_dir):
         else:
             logging.warning(f"Skipping {source_path}: Neither a file nor a directory")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, BASEPATH):
     logging.info(f"Generating page: {from_path} --> {dest_path}, using {template_path}")
     # Ensures dest_dir exists
     dir_path = dirname(dest_path)
@@ -53,12 +53,13 @@ def generate_page(from_path, template_path, dest_path):
     # Convert markdown to HTML
     html_string = markdown_to_html_node(from_file).to_html()
     # Replace Placeholders
-    final_html = template_file.replace('{{ Title }}', title).replace('{{ Content }}', html_string)
+    final_html = template_file.replace('{{ Title }}', title).replace('{{ Content }}', html_string).replace('href="/', f'href="{BASEPATH}').replace('src="/', f'src="{BASEPATH}')
     # Writes to content to dest_path file
     with open(dest_path, 'w') as d_file:
         d_file.write(final_html)
 
-def recursive_gen(from_path, template_path, dest_path):
+def recursive_gen(from_path, template_path, dest_path, BASEPATH):
+    logging.info(f"Basepath = {BASEPATH}")
     for item in listdir(from_path):
         source_path = join(from_path,item)
         destination = join(dest_path,item)
@@ -67,7 +68,7 @@ def recursive_gen(from_path, template_path, dest_path):
                 try:
                     logging.info(f"Generating HTML: {source_path} --> {destination}")
                     destination = destination.replace('.md', '.html')
-                    generate_page(source_path, template_path, destination)
+                    generate_page(source_path, template_path, destination, BASEPATH)
                 except Exception as e:
                     logging.error(f"Failed to generate {source_path}: {e}")
             else:
@@ -76,6 +77,6 @@ def recursive_gen(from_path, template_path, dest_path):
             if not exists(destination):
                 logging.info(f"Creating Directory {destination}")
                 mkdir(destination)
-            recursive_gen(source_path, template_path, destination)
+            recursive_gen(source_path, template_path, destination, BASEPATH)
         else:
             logging.warning(f"Skipping {source_path}: neither a file nor directory")
